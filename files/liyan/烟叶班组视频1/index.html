@@ -2,8 +2,8 @@
   <head>
     <title>烟叶班组视频1.MP4</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
-    <link type="text/css" rel="stylesheet" href="/static/ckplayer/css/ckplayer.css" />
-    <script type="text/javascript" src="/static/ckplayer/js/ckplayer.js" charset="UTF-8"></script>
+    <link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Cinnamoroll-File-storage-service/file/static/ckplayer/css/ckplayer.css" />
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/Cinnamoroll-File-storage-service/file/static/ckplayer/css/ckplayer.js" charset="UTF-8"></script>
   </head>
   <body>
     <!-- <div class="video" style="width: 600px;height: 400px;">播放容器</div> -->
@@ -15,24 +15,6 @@
         video: 'https://files.catbox.moe/851qec.mp4' //视频地址
     };
     var player=new ckplayer(videoObject) //调用播放器并赋值给变量player
-    player.play(function(){
-				document.getElementById('state').innerHTML='监听到播放';
-			});
-			player.pause(function(){
-				document.getElementById('state').innerHTML='监听到暂停';
-			});
-			player.volume(function(vol){
-				document.getElementById('state').innerHTML='监听到音量改变：'+vol;
-			});
-			player.muted(function(b){
-				document.getElementById('state2').innerHTML='监听到静音状态：'+b;
-			});
-			player.full(function(b){
-				document.getElementById('state').innerHTML='监听到全屏状态：'+b;
-			});
-			player.ended(function(){
-				document.getElementById('state').innerHTML='监听到播放结束';
-			});
     </script>
   </body>
 </html>
