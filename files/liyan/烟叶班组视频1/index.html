@@ -15,6 +15,24 @@
         video: 'https://cdn.jsdelivr.net/gh/Cinnamoroll-File-storage-service/file/files/liyan/%E7%83%9F%E5%8F%B6%E7%8F%AD%E7%BB%84%E8%A7%86%E9%A2%911/video.mp4' //视频地址
     };
     var player=new ckplayer(videoObject) //调用播放器并赋值给变量player
+    player.play(function(){
+				document.getElementById('state').innerHTML='监听到播放';
+			});
+			player.pause(function(){
+				document.getElementById('state').innerHTML='监听到暂停';
+			});
+			player.volume(function(vol){
+				document.getElementById('state').innerHTML='监听到音量改变：'+vol;
+			});
+			player.muted(function(b){
+				document.getElementById('state2').innerHTML='监听到静音状态：'+b;
+			});
+			player.full(function(b){
+				document.getElementById('state').innerHTML='监听到全屏状态：'+b;
+			});
+			player.ended(function(){
+				document.getElementById('state').innerHTML='监听到播放结束';
+			});
     </script>
   </body>
 </html>
