@@ -21,34 +21,101 @@
     <body>
         <iframe id="page" src=""></iframe>
         <script>
-            const Page=`https://aqpc.tjdonglixs.cn/`;
-            document.getElementById("page").src=Page+location.hash.slice(1);
-            top.postMessage(location.pathname+location.search+location.hash, "*");
-            top.postMessage("title "+document.title, "*");
-            window.addEventListener("load",()=>{
-                window.addEventListener("message",(e)=>{
-                    console.log(e.data);
-                    window.history.pushState({},0,location.origin+'#'+e.data);
-                });
+            //实时CDN
+            //const Page=`https://aqpc.tjdonglixs.cn/`;
+            //document.getElementById("page").src=Page+location.hash.slice(1);
+            //top.postMessage(location.pathname+location.search+location.hash, "*");
+            //window.addEventListener("load",()=>{
+                //window.addEventListener("message",(e)=>{
+                    //console.log(e.data);
+                    //window.history.pushState({},0,location.origin+'#'+e.data);
+                //});
+            //});
+            
+            //网站本身用history刷新机制
+            class Dep {                  // 订阅池
+                constructor(name){
+                    this.id = new Date() //这里简单的运用时间戳做订阅池的ID
+                    this.subs = []       //该事件下被订阅对象的集合
+                }
+                defined(){              // 添加订阅者
+                    Dep.watch.add(this);
+                }
+                notify() {              //通知订阅者有变化
+                    this.subs.forEach((e, i) => {
+                        if(typeof e.update === 'function'){
+                            try {
+                                e.update.apply(e)  //触发订阅者更新函数
+                            } catch(err){
+                                console.warr(err)
+                            }
+                        }
+                    })
+                }
+            }
+            Dep.watch = null;
+            class Watch {
+                constructor(name, fn){
+                    this.name = name;       //订阅消息的名称
+                    this.id = new Date();   //这里简单的运用时间戳做订阅者的ID
+                    this.callBack = fn;     //订阅消息发送改变时->订阅者执行的回调函数     
+                }
+                add(dep) {                  //将订阅者放入dep订阅池
+                    dep.subs.push(this);
+                }
+                update() {                  //将订阅者更新方法
+                    var cb = this.callBack; //赋值为了不改变函数内调用的this
+                    cb(this.name);          
+                }
+            }
+            var addHistoryMethod = (function(){
+                var historyDep = new Dep();
+                return function(name) {
+                    if(name === 'historychange'){
+                        return function(name, fn){
+                            var event = new Watch(name, fn)
+                            Dep.watch = event;
+                            historyDep.defined();
+                            Dep.watch = null;       //置空供下一个订阅者使用
+                        }
+                    } else if(name === 'pushState' || name === 'replaceState') {
+                        var method = history[name];
+                        return function(){
+                            method.apply(history, arguments);
+                            historyDep.notify();
+                        }
+                    }
+                }
+            }())
+            window.addHistoryListener = addHistoryMethod('historychange');
+            history.pushState =  addHistoryMethod('pushState');
+            history.replaceState =  addHistoryMethod('replaceState');
+            window.addHistoryListener('history',function(){
+                top.postMessage("history "+location.pathname+location.search+location.hash, "*");
             });
-            const changeFavicon = link => {
-                let $favicon = document.querySelector('link[rel="icon"]');
+            const title_change= new MutationObserver(function(mutations) {top.postMessage("title "+mutations[0].target.innerText, "*");})
+            title_change.observe(document.querySelector('title'), { characterData: true, subtree: true, childList: true })
+            top.postMessage("title "+document.title, "*");
+            
+            //动态图标和标题
+            //const changeFavicon = link => {
+                //let $favicon = document.querySelector('link[rel="icon"]');
                 // If a <link rel="icon"> element already exists,
                 // change its href to the given link.
-                if ($favicon !== null) {
-                    $favicon.href = link;
+                //if ($favicon !== null) {
+                    //$favicon.href = link;
                     // Otherwise, create a new element and append it to <head>.
-                } else {
-                    $favicon = document.createElement("link");
-                    $favicon.rel = "icon";
-                    $favicon.href = link;
-                    document.head.appendChild($favicon);
-                }
-            };
-            let icon = 'https://aqpc.tjdonglixs.cn/favicon.ico'; // 图片地址
-            changeFavicon(icon); // 动态修改网站图标
-            let title = '仓储部安全排查论坛'; // 网站标题
-            document.title = title; // 动态修改网站标题
+                //} else {
+                    //$favicon = document.createElement("link");
+                    //$favicon.rel = "icon";
+                    //$favicon.href = link;
+                    //document.head.appendChild($favicon);
+                //}
+            //};
+            //let icon = 'https://aqpc.tjdonglixs.cn/favicon.ico'; // 图片地址
+            //changeFavicon(icon); // 动态修改网站图标
+            //let title = '仓储部安全排查论坛'; // 网站标题
+            //document.title = title; // 动态修改网站标题
         </script>
     </body>
 </html>
