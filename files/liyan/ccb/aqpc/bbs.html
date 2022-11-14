@@ -21,6 +21,16 @@
     <body>
         <iframe id="page" src=""></iframe>
         <script>
+            //实时CDN
+            const Page=`https://aqpc.tjdonglixs.cn/`;
+            document.getElementById("page").src=Page+location.hash.slice(1);
+            window.addEventListener("load",()=>{
+                window.addEventListener("message",(e)=>{
+                    console.log(e.data);
+                    window.history.pushState({},0,location.origin+'#'+e.data);
+                });
+            });
+            
             //动态图标和标题
             const changeFavicon = link => {
                 let $favicon = document.querySelector('link[rel="icon"]');
@@ -40,16 +50,6 @@
             changeFavicon(icon); // 动态修改网站图标
             let title = '仓储部安全排查论坛'; // 网站标题
             document.title = title; // 动态修改网站标题
-            
-            //实时CDN
-            const Page=`https://aqpc.tjdonglixs.cn/`;
-            document.getElementById("page").src=Page+location.hash.slice(1);
-            window.addEventListener("load",()=>{
-                window.addEventListener("message",(e)=>{
-                    console.log(e.data);
-                    window.history.pushState({},0,location.origin+'#'+e.data);
-                });
-            });
         </script>
     </body>
 </html>
